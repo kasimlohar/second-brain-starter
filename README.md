@@ -25,7 +25,8 @@ If a feature would violate one of these, it does not belong here.
 ## What you get
 
 - A vault skeleton with an inbox, projects, areas, resources, archive, and meta folders
-- `CLAUDE.md` — operating rules the agent reads before touching anything
+- `AGENTS.md` — canonical operating rules for any MCP client
+- `CLAUDE.md` — imports `AGENTS.md` and adds Claude Code specifics
 - `90-Meta/schema.md` — the note grammar, with examples
 - Note templates for entities and projects
 - Ten golden questions for measuring whether retrieval actually works
@@ -135,6 +136,106 @@ Then, in a Claude Code session whose working directory is the vault:
 > Write a note titled "Setup Test" with one `[fact]` observation, then search for it.
 
 Expected: the file appears in `00-Inbox/Agent/`, and the search returns it. Move the test note to `40-Archive/` when done.
+
+## Connect other agents
+
+Basic Memory is an MCP server, so any MCP-capable client can use the same vault. Each client launches its own server process against the same files; conversations never sync, but a write from one is searchable by the others within seconds.
+
+| Client | Configuration | Rules file |
+|---|---|---|
+| Claude Desktop | `mcpServers` in `claude_desktop_config.json` | none |
+| Codex CLI | `basic-memory install codex`, or `~/.codex/config.toml` | `AGENTS.md` |
+| Gemini CLI | `mcpServers` in `~/.gemini/settings.json` | `GEMINI.md` |
+| OpenCode | `mcp` in `~/.config/opencode/opencode.json` | `AGENTS.md` |
+| Cursor | `mcpServers` in `~/.cursor/mcp.json` | `.cursor/rules/` |
+| VS Code (Copilot) | `servers` in `.vscode/mcp.json` | `.github/copilot-instructions.md` |
+
+Always pin the project so a client cannot reach another vault:
+
+```text
+command: basic-memory
+args: ["mcp", "--project", "brain"]
+```
+
+GUI clients often do not inherit `PATH`. If the server fails to start, replace `basic-memory` with the absolute path from `where basic-memory` (Windows) or `which basic-memory`.
+
+### Codex CLI
+
+```bash
+basic-memory install codex
+```
+
+Manual alternative in `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.basic-memory]
+command = "basic-memory"
+args = ["mcp", "--project", "brain"]
+```
+
+Codex reads `AGENTS.md` from the repository root.
+
+### Gemini CLI
+
+`~/.gemini/settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "basic-memory": {
+      "command": "basic-memory",
+      "args": ["mcp", "--project", "brain"]
+    }
+  }
+}
+```
+
+Keep `GEMINI.md` as a pointer to `AGENTS.md`.
+
+### OpenCode
+
+`~/.config/opencode/opencode.json`, or `opencode.json` in the vault:
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "basic-memory": {
+      "type": "local",
+      "command": ["basic-memory", "mcp", "--project", "brain"],
+      "enabled": true
+    }
+  }
+}
+```
+
+OpenCode reads `AGENTS.md`.
+
+### Claude Desktop, Cursor, VS Code
+
+Use the same server block in each client's config:
+
+```json
+{
+  "mcpServers": {
+    "basic-memory": {
+      "command": "C:\\Users\\you\\.local\\bin\\basic-memory.exe",
+      "args": ["mcp", "--project", "brain"]
+    }
+  }
+}
+```
+
+Claude Desktop reads `claude_desktop_config.json`. Cursor accepts the same block in `~/.cursor/mcp.json`. VS Code names the top-level key `servers` and adds `"type": "stdio"` to the entry. A Windows path inside JSON needs doubled backslashes.
+
+Client config formats change; if a key is rejected, check that client's MCP documentation.
+
+### Keep one set of rules
+
+- `AGENTS.md` is canonical. `CLAUDE.md` imports it; `GEMINI.md`, `.cursor/rules/`, and Copilot instructions should point to it rather than duplicate it.
+- The `/brain-*` commands work only in Claude Code. Other clients follow the same rules in prose.
+- Let one agent own writeback. If several write, give each its own capture folder: `00-Inbox/Agent/Claude/`, `00-Inbox/Agent/Codex/`.
+- Deletion stays disabled for every client.
 
 ## Vault layout
 
