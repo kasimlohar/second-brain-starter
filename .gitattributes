@@ -1,0 +1,3 @@
+# Keep the vault consistent across platforms: LF in the repository and
+# in the working tree, so Obsidian and git do not fight over line endings.
+* text=auto eol=lf

@@ -1,0 +1,22 @@
+# Basic Memory runtime
+.brain/
+.smart-env/
+.trash/
+
+# Obsidian workspace state
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+
+# Plugin binaries; install locally. Remove this line if you want
+# your own private vault to back up plugin configuration.
+.obsidian/plugins/
+
+# Local agent settings
+.claude/settings.local.json
+
+# OS noise
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
