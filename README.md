@@ -8,6 +8,8 @@ A local-first AI second brain built from three existing pieces:
 
 This repository is not an application. It is a convention layer: folder layout, note grammar, agent rules, and five slash commands, plus the setup steps that connect the three tools. Your notes stay as files on disk. The index is a cache and can be rebuilt at any time.
 
+**Project page:** <https://kasimlohar.github.io/second-brain-starter/>
+
 **Status:** draft. Verified on Windows 11 with Basic Memory 1.0.0, Obsidian 1.15.1, and Claude Code. Not yet tested on macOS or Linux.
 
 ---
@@ -32,6 +34,7 @@ If a feature would violate one of these, it does not belong here.
 - Ten golden questions for measuring whether retrieval actually works
 - Five project-scoped commands: `/brain-recall`, `/brain-capture`, `/brain-triage`, `/brain-review`, `/brain-backup`
 - `docs/architecture.md` — how the pieces fit and where the trust boundaries are
+- `docs/index.html` — the public project page, served by GitHub Pages
 
 ## Prerequisites
 
